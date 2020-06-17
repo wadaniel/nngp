@@ -1,5 +1,11 @@
 # NNGP: Deep Neural Network Kernel for Gaussian Process
 
+Runs with 
+Python Version Python 2.7.15+
+and
+tensorflow Version: 1.15.0
+
+--
 TensorFlow open source implementation of
 
 [*Deep Neural Networks as Gaussian Processes*](https://arxiv.org/abs/1711.00165)
