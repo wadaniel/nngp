@@ -29,8 +29,10 @@ lr = opt.lr
 depth = opt.depth
 width = opt.width
 num_classes = 10
-epochs = 10000
+epochs = 10
 
+path = "experiments/nn_{}_lr{}_batch{}_depth{}_width{}_size{}_w{}_b{}".format(opt.dataset, lr, batch_size, depth, width, opt.train_size, opt.weight_var, opt.bias_var)
+print(path)
 # the data, split between train and test sets
 if opt.dataset == "mnist":
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -72,10 +74,11 @@ model.add(Dense(num_classes,
 
 model.summary()
 
-model.compile(loss='mean_squared_error', optimizer='sgd', metrics=['mean_squared_error'])
+model.compile(loss='mean_squared_error', optimizer='sgd', metrics=['mean_squared_error', 'categorical_accuracy'])
 
 callbacks = [
     EarlyStopping(monitor='loss', patience=10, verbose=0),
+    EarlyStopping(monitor='categorical_accuracy', baseline=1.0, patience=0)
 ]
 
 history = model.fit(x_train, y_train,
@@ -87,4 +90,5 @@ score = model.evaluate(x_test, y_test_reg, verbose=0)
 print('Test loss:', score[0])
 predictions = model.predict(x_test)
 print(accuracy_score(y_test, predictions.argmax(axis=1)))
-#np.save()
+print(predictions)
+np.save(path + ".npy", predictions)
