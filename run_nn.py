@@ -7,6 +7,7 @@ from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop, SGD, Adam
 from keras import initializers
 from keras.callbacks import EarlyStopping
+import tensorflow as tf
 
 import argparse
 import numpy as np
@@ -29,7 +30,7 @@ lr = opt.lr
 depth = opt.depth
 width = opt.width
 num_classes = 10
-epochs = 10
+epochs = 10000
 
 path = "experiments/nn_{}_lr{}_batch{}_depth{}_width{}_size{}_w{}_b{}".format(opt.dataset, lr, batch_size, depth, width, opt.train_size, opt.weight_var, opt.bias_var)
 print(path)
@@ -76,15 +77,27 @@ model.summary()
 
 model.compile(loss='mean_squared_error', optimizer='sgd', metrics=['mean_squared_error', 'categorical_accuracy'])
 
+class MyThresholdCallback(tf.keras.callbacks.Callback):
+    def __init__(self, threshold):
+        super(MyThresholdCallback, self).__init__()
+        self.threshold = threshold
+
+    def on_epoch_end(self, epoch, logs=None): 
+        accuracy = logs["categorical_accuracy"]
+        if accuracy >= self.threshold:
+            self.model.stop_training = True
+
 callbacks = [
-    EarlyStopping(monitor='loss', patience=10, verbose=0),
-    EarlyStopping(monitor='categorical_accuracy', baseline=1.0, patience=0)
+    #EarlyStopping(monitor='loss', patience=10, verbose=0),
+    MyThresholdCallback(threshold=1.0)
+    #EarlyStopping(monitor='categorical_accuracy', baseline=1.0, patience=0)
 ]
 
 history = model.fit(x_train, y_train,
                     batch_size=batch_size,
                     epochs=epochs,
-                    verbose=1,)
+                    verbose=1,
+                    callbacks=callbacks)
 
 score = model.evaluate(x_test, y_test_reg, verbose=0)
 print('Test loss:', score[0])
