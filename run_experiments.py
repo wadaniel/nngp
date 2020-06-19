@@ -122,6 +122,12 @@ def run_nngp_eval(hparams, run_dir):
          num_train=FLAGS.num_train,
          mean_subtraction=True,
          random_roated_labels=False)
+
+  elif FLAGS.dataset == 'cifar':
+    (train_image, train_label, valid_image, valid_label, test_image,
+     test_label) = load_dataset.load_cifar10(
+         num_train=FLAGS.num_train,
+         mean_subtraction=True)
   else:
     raise NotImplementedError
 
