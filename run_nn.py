@@ -18,6 +18,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--lr', default=0.01, type=float)
 parser.add_argument('--depth', required=True, type=int)
 parser.add_argument('--width', required=True, type=int)
+parser.add_argument('--decay', default=0.9, type=float)
 parser.add_argument('--batch_size', default=200, type=int)
 parser.add_argument('--train_size', default=50000, type=int)
 parser.add_argument('--dataset', default="cifar10")
@@ -42,9 +43,18 @@ elif opt.dataset == "cifar10":
 
 x_train = x_train.reshape(x_train.shape[0], -1)[:opt.train_size]
 x_test = x_test.reshape(x_test.shape[0], -1)
-x_train = x_train.astype('float32')
-x_test = x_test.astype('float32')
+x_train = x_train.astype('float64')
+x_test = x_test.astype('float64')
 x_train /= 255
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+# create scaler
+scaler = MinMaxScaler(feature_range=(-1,1))
+#scaler = StandardScaler()
+# fit scaler on data
+scaler.fit(x_train)
+# apply transform
+#x_train = scaler.transform(x_train)
+#x_test = scaler.transform(x_test)
 x_test /= 255
 print(x_train.shape[0], 'train samples')
 print(x_test.shape[0], 'test samples')
@@ -74,8 +84,13 @@ model.add(Dense(num_classes,
     bias_initializer=initializers.RandomNormal(stddev=sqrt(opt.bias_var))))
 
 model.summary()
+lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+    initial_learning_rate=lr,
+    decay_steps=100000,
+    decay_rate=opt.decay)
+optimizer = tf.keras.optimizers.SGD(learning_rate=lr)#_schedule)
 
-model.compile(loss='mean_squared_error', optimizer='sgd', metrics=['mean_squared_error', 'categorical_accuracy'])
+model.compile(loss='mean_squared_error', optimizer=optimizer, metrics=['mean_squared_error', 'categorical_accuracy'])
 
 class MyThresholdCallback(tf.keras.callbacks.Callback):
     def __init__(self, threshold):
@@ -88,7 +103,7 @@ class MyThresholdCallback(tf.keras.callbacks.Callback):
             self.model.stop_training = True
 
 callbacks = [
-    #EarlyStopping(monitor='loss', patience=10, verbose=0),
+    EarlyStopping(monitor='loss', patience=100, verbose=0),
     MyThresholdCallback(threshold=1.0)
     #EarlyStopping(monitor='categorical_accuracy', baseline=1.0, patience=0)
 ]
