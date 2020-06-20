@@ -28,8 +28,10 @@ from __future__ import print_function
 import copy
 import numpy as np
 import tensorflow as tf
-from tensorflow.examples.tutorials.mnist import input_data
 
+from keras.datasets import mnist, cifar10 
+
+# uncomment later
 flags = tf.app.flags
 FLAGS = flags.FLAGS
 
@@ -42,10 +44,11 @@ def load_mnist(num_train=50000,
                random_roated_labels=False):
   """Loads MNIST as numpy array."""
 
+  from tensorflow.examples.tutorials.mnist import input_data
   data_dir = FLAGS.data_dir
   datasets = input_data.read_data_sets(
       data_dir, False, validation_size=10000, one_hot=True)
-  mnist_data = _select_mnist_subset(
+  mnist_data = _select_subset(
       datasets,
       num_train,
       use_float64=use_float64,
@@ -54,10 +57,49 @@ def load_mnist(num_train=50000,
 
   return mnist_data
 
+def load_cifar10(num_train=50000,
+                 use_float64=False,
+                 mean_subtraction=False,
+                 random_roated_labels=False):
+    """Loads CIFAR as numpy array."""
+    (x_train, y_train), (x_test, y_test) = cifar10.load_data()
+  
+    x_train = np.array([img.flatten() for img in x_train])
+    x_test  = np.array([img.flatten() for img in x_test])
+    
+    x_train = x_train.astype('float64')
+    y_train = y_train.astype('float64')
+    x_test  = x_test.astype('float64')
+    y_test  = y_test.astype('float64')
 
-def _select_mnist_subset(datasets,
+    x_train = x_train[:num_train]
+    y_train = y_train[:num_train]
+
+    # split half-half
+    ntest = int(0.5*len(x_test))
+    x_valid = x_test[:ntest]
+    y_valid = y_test[:ntest]
+    x_test  = x_test[ntest+1:]
+    y_test  = y_test[ntest+1:]
+
+    train_image_mean = np.mean(x_train)
+    train_label_mean = np.mean(y_train)
+ 
+    if mean_subtraction:
+        x_train -= train_image_mean
+        y_train -= train_label_mean
+        x_test  -= train_image_mean
+        y_test  -= train_label_mean
+        x_valid -= train_image_mean
+        y_valid -= train_label_mean
+     
+    return (x_train, y_train,
+            x_valid, y_valid,
+            x_test, y_test)
+
+def _select_subset(datasets,
                          num_train=100,
-                         digits=list(range(10)),
+                         classes=list(range(10)),
                          seed=9999,
                          sort_by_class=False,
                          use_float64=False,
@@ -65,22 +107,22 @@ def _select_mnist_subset(datasets,
                          random_roated_labels=False):
   """Select subset of MNIST and apply preprocessing."""
   np.random.seed(seed)
-  digits.sort()
+  classes.sort()
   subset = copy.deepcopy(datasets)
 
-  num_class = len(digits)
+  num_class = len(classes)
   num_per_class = num_train // num_class
 
   idx_list = np.array([], dtype='uint8')
 
   ys = np.argmax(subset.train.labels, axis=1)  # undo one-hot
 
-  for digit in digits:
+  for c in classes:
     if datasets.train.num_examples == num_train:
-      idx_list = np.concatenate((idx_list, np.where(ys == digit)[0]))
+      idx_list = np.concatenate((idx_list, np.where(ys == c)[0]))
     else:
       idx_list = np.concatenate((idx_list,
-                                 np.where(ys == digit)[0][:num_per_class]))
+                                 np.where(ys == c)[0][:num_per_class]))
   if not sort_by_class:
     np.random.shuffle(idx_list)
 
