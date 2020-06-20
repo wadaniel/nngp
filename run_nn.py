@@ -23,6 +23,7 @@ parser.add_argument('--train_size', default=50000, type=int)
 parser.add_argument('--dataset', default="cifar10")
 parser.add_argument('--weight_var', required=True, type=float)
 parser.add_argument('--bias_var', required=True, type=float)
+parser.add_argument('--sub_mean', default=False, type=bool)
 opt = parser.parse_args()
 
 batch_size = opt.batch_size
@@ -49,6 +50,16 @@ x_test /= 255
 print(x_train.shape[0], 'train samples')
 print(x_test.shape[0], 'test samples')
 
+# subtract mean
+if (opt.submean == True):
+    train_image_mean = np.mean(x_train)
+    train_label_mean = np.mean(y_train)
+ 
+    x_train -= train_image_mean
+    y_train -= train_label_mean
+    x_test  -= train_image_mean
+    y_test  -= train_label_mean
+ 
 # convert class vectors to binary class matrices
 y_train = y_train[:opt.train_size]
 y_train = keras.utils.to_categorical(y_train, num_classes)

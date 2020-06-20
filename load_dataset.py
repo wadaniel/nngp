@@ -32,11 +32,11 @@ import tensorflow as tf
 from keras.datasets import mnist, cifar10 
 
 # uncomment later
-#flags = tf.app.flags
-#FLAGS = flags.FLAGS
+flags = tf.app.flags
+FLAGS = flags.FLAGS
 
-#flags.DEFINE_string('data_dir', '/tmp/nngp/data/',
-#                    'Directory for data.')
+flags.DEFINE_string('data_dir', '/tmp/nngp/data/',
+                    'Directory for data.')
 
 def load_mnist(num_train=50000,
                use_float64=False,
@@ -63,8 +63,10 @@ def load_cifar10(num_train=50000,
                  random_roated_labels=False):
     """Loads CIFAR as numpy array."""
     (x_train, y_train), (x_test, y_test) = cifar10.load_data()
- 
-
+  
+    x_train = np.array([img.flatten() for img in x_train])
+    x_test  = np.array([img.flatten() for img in x_test])
+    
     x_train = x_train.astype('float64')
     y_train = y_train.astype('float64')
     x_test  = x_test.astype('float64')

@@ -117,17 +117,20 @@ def run_nngp_eval(hparams, run_dir):
   # Get the sets of images and labels for training, validation, and
   # # test on dataset.
   if FLAGS.dataset == 'mnist':
-    (train_image, train_label, valid_image, valid_label, test_image,
-     test_label) = load_dataset.load_mnist(
+     (train_image, train_label, valid_image, valid_label, test_image,
+      test_label) = load_dataset.load_mnist(
          num_train=FLAGS.num_train,
          mean_subtraction=True,
          random_roated_labels=False)
+     print(train_image)
+     print(train_image.shape)
 
   elif FLAGS.dataset == 'cifar':
-    (train_image, train_label, valid_image, valid_label, test_image,
+     (train_image, train_label, valid_image, valid_label, test_image,
      test_label) = load_dataset.load_cifar10(
          num_train=FLAGS.num_train,
          mean_subtraction=True)
+
   else:
     raise NotImplementedError
 
@@ -158,10 +161,10 @@ def run_nngp_eval(hparams, run_dir):
     # Construct Gaussian Process Regression model
     model = gpr.GaussianProcessRegression(
         train_image, train_label, kern=nngp_kernel)
-
+    
     start_time = time.time()
     tf.logging.info('Training')
-
+    
     # For large number of training points, we do not evaluate on full set to
     # save on training evaluation time.
     if FLAGS.num_train <= 5000:
@@ -220,7 +223,10 @@ def run_nngp_eval(hparams, run_dir):
     record_results.append(nngp_kernel.var_fixed_point_np[0])
 
   # Store data
-  result_file = os.path.join(run_dir, 'results.csv')
+  rfile = "results_{0}_{1}_{2}_{3}.csv".format(FLAGS.dataset, FLAGS.num_train, 
+          hparams.weight_var, hparams.bias_var)
+  
+  result_file = os.path.join(run_dir, rfile)
   with tf.gfile.Open(result_file, 'a') as f:
     filewriter = csv.writer(f)
     filewriter.writerow(record_results)
