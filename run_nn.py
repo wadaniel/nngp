@@ -24,7 +24,7 @@ parser.add_argument('--train_size', default=50000, type=int)
 parser.add_argument('--dataset', default="cifar10")
 parser.add_argument('--weight_var', required=True, type=float)
 parser.add_argument('--bias_var', required=True, type=float)
-parser.add_argument('--sub_mean', default=False, type=bool)
+parser.add_argument("--sub_mean", action='store_true', default=False)
 opt = parser.parse_args()
 
 batch_size = opt.batch_size
@@ -59,9 +59,16 @@ scaler.fit(x_train)
 x_test /= 255
 print(x_train.shape[0], 'train samples')
 print(x_test.shape[0], 'test samples')
+ 
+# convert class vectors to binary class matrices
+y_train = y_train[:opt.train_size]
+y_train = keras.utils.to_categorical(y_train, num_classes)
+#y_train = -0.1 * (np.ones(y_train.shape) - y_train) + 0.9 * y_train
+y_test_reg = keras.utils.to_categorical(y_test, num_classes)
+#y_test_reg = -0.1 * (np.ones(y_test.shape) - y_test_reg) + 0.9 * y_test_reg
 
 # subtract mean
-if (opt.submean == True):
+if opt.sub_mean:
     train_image_mean = np.mean(x_train)
     train_label_mean = np.mean(y_train)
  
@@ -69,13 +76,6 @@ if (opt.submean == True):
     y_train -= train_label_mean
     x_test  -= train_image_mean
     y_test  -= train_label_mean
- 
-# convert class vectors to binary class matrices
-y_train = y_train[:opt.train_size]
-y_train = keras.utils.to_categorical(y_train, num_classes)
-y_train = -0.1 * (np.ones(y_train.shape) - y_train) + 0.9 * y_train
-y_test_reg = keras.utils.to_categorical(y_test, num_classes)
-y_test_reg = -0.1 * (np.ones(y_test.shape) - y_test_reg) + 0.9 * y_test_reg
 
 print(sqrt(opt.weight_var/width))
 print(type(sqrt(opt.weight_var/width)))
