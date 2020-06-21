@@ -78,7 +78,7 @@ def set_default_hparams():
       nonlinearity='tanh', weight_var=1.3, bias_var=0.2, depth=2)
 
 
-def do_eval(sess, model, x_data, y_data, save_pred=False):
+def do_eval(sess, model, x_data, y_data, save_pred=False, fname=""):
   """Run evaluation."""
 
   gp_prediction, stability_eps = model.predict(x_data, sess)
@@ -91,10 +91,12 @@ def do_eval(sess, model, x_data, y_data, save_pred=False):
   tf.logging.info('MSE: %.8f'%mse)
 
   if save_pred:
+    if (fname == ""):
+        fname = 'gp_prediction_stats.npy'
     with tf.gfile.Open(
-        os.path.join(FLAGS.experiment_dir, 'gp_prediction_stats.npy'),
+        os.path.join(FLAGS.experiment_dir, fname),
         'w') as f:
-      np.save(f, gp_prediction)
+      np.save(f, gp_prediction) 
 
   return accuracy, mse, pred_norm, stability_eps
 
@@ -180,15 +182,24 @@ def run_nngp_eval(hparams, run_dir):
           sess, model, train_image[:1000], train_label[:1000])
       tf.logging.info('Evaluation of training set (%d examples) took '
                       '%.3f secs'%(1000, time.time() - start_time))
-
+ 
+    vfile = "validation_{0}_{1}_{2}_{3}.npy".format(FLAGS.dataset, FLAGS.num_train, 
+          hparams.weight_var, hparams.bias_var)
+ 
     start_time = time.time()
     tf.logging.info('Validation')
     acc_valid, mse_valid, norm_valid, _ = do_eval(
-        sess, model, valid_image[:FLAGS.num_eval],
-        valid_label[:FLAGS.num_eval])
+        sess, 
+        model,
+        valid_image[:FLAGS.num_eval],
+        valid_label[:FLAGS.num_eval],
+        save_pred=True, fname=vfile)
     tf.logging.info('Evaluation of valid set (%d examples) took %.3f secs'%(
         FLAGS.num_eval, time.time() - start_time))
-
+ 
+    tfile = "test_{0}_{1}_{2}_{3}.npy".format(FLAGS.dataset, FLAGS.num_train, 
+          hparams.weight_var, hparams.bias_var)
+ 
     start_time = time.time()
     tf.logging.info('Test')
     acc_test, mse_test, norm_test, _ = do_eval(
@@ -196,7 +207,7 @@ def run_nngp_eval(hparams, run_dir):
         model,
         test_image[:FLAGS.num_eval],
         test_label[:FLAGS.num_eval],
-        save_pred=False)
+        save_pred=True, fname=tfile)
     tf.logging.info('Evaluation of test set (%d examples) took %.3f secs'%(
         FLAGS.num_eval, time.time() - start_time))
 
