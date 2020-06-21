@@ -7,6 +7,7 @@ from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop, SGD, Adam
 from keras import initializers
 from keras.callbacks import EarlyStopping
+from keras.regularizers import l2
 import tensorflow as tf
 
 import argparse
@@ -18,7 +19,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--lr', default=0.01, type=float)
 parser.add_argument('--depth', required=True, type=int)
 parser.add_argument('--width', required=True, type=int)
-parser.add_argument('--decay', default=0.9, type=float)
+parser.add_argument('--decay', default=0.01, type=float)
 parser.add_argument('--batch_size', default=200, type=int)
 parser.add_argument('--train_size', default=50000, type=int)
 parser.add_argument('--dataset', default="cifar10")
@@ -62,9 +63,9 @@ print(x_test.shape[0], 'test samples')
  
 # convert class vectors to binary class matrices
 y_train = y_train[:opt.train_size]
-y_train = keras.utils.to_categorical(y_train, num_classes)
+y_train = keras.utils.to_categorical(y_train, num_classes).astype('float64')
 #y_train = -0.1 * (np.ones(y_train.shape) - y_train) + 0.9 * y_train
-y_test_reg = keras.utils.to_categorical(y_test, num_classes)
+y_test_reg = keras.utils.to_categorical(y_test, num_classes).astype('float64')
 #y_test_reg = -0.1 * (np.ones(y_test.shape) - y_test_reg) + 0.9 * y_test_reg
 
 # subtract mean
@@ -75,22 +76,25 @@ if opt.sub_mean:
     x_train -= train_image_mean
     y_train -= train_label_mean
     x_test  -= train_image_mean
-    y_test  -= train_label_mean
+    y_test_reg  -= train_label_mean
 
 print(sqrt(opt.weight_var/width))
 print(type(sqrt(opt.weight_var/width)))
 print(x_train.shape[1])
 model = Sequential()
 model.add(Dense(width, activation='relu', input_shape=(x_train.shape[1],), 
+    kernel_regularizer=l2(opt.decay), bias_regularizer=l2(opt.decay),
     kernel_initializer=initializers.RandomNormal(stddev=sqrt(opt.weight_var/width)),
     bias_initializer=initializers.RandomNormal(stddev=sqrt(opt.bias_var))))
 
 for i in range(depth - 1):
     model.add(Dense(width, activation='relu',
+        kernel_regularizer=l2(opt.decay), bias_regularizer=l2(opt.decay),
         kernel_initializer=initializers.RandomNormal(stddev=sqrt(opt.weight_var/width)),
         bias_initializer=initializers.RandomNormal(stddev=sqrt(opt.bias_var))))
 
 model.add(Dense(num_classes,
+    kernel_regularizer=l2(opt.decay), bias_regularizer=l2(opt.decay),
     kernel_initializer=initializers.RandomNormal(stddev=sqrt(opt.weight_var/width)),
     bias_initializer=initializers.RandomNormal(stddev=sqrt(opt.bias_var))))
 
