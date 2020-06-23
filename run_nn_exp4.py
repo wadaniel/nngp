@@ -6,7 +6,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop, SGD, Adam
 from keras import initializers
-from keras.callbacks import EarlyStopping
+from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.regularizers import l2
 import tensorflow as tf
 
@@ -98,14 +98,14 @@ model.add(Dense(num_classes,
 
 model.summary()
 
-optimizer = tf.keras.optimizers.Adam(learning_rate=lr)#_schedule)
+optimizer = Adam(learning_rate=lr)#_schedule)
 
 model.compile(loss='mean_squared_error', optimizer=optimizer, metrics=['mean_squared_error', 'categorical_accuracy'])
 
 callbacks = [
-    ModelCheckpoint(path + ".h5", monitor='val_acc', verbose=1, save_best_only=True, mode='max'),
-    EarlyStopping(monitor="val_acc", mode="max", patience=50, verbose=1),
-    ReduceLROnPlateau(monitor="val_acc", mode="max", patience=30, verbose=2)
+    ModelCheckpoint(path + ".h5", monitor='val_categorical_accuracy', verbose=1, save_best_only=True, mode='max'),
+    EarlyStopping(monitor="val_categorical_accuracy", mode="max", patience=50, verbose=1),
+    ReduceLROnPlateau(monitor="val_categorical_accuracy", mode="max", patience=5, verbose=2)
 ]
 
 history = model.fit(x_train, y_train,
