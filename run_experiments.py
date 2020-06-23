@@ -92,10 +92,8 @@ def do_eval(sess, model, x_data, y_data, save_pred=False, fname=""):
   if save_pred:
     if (fname == ""):
         fname = 'gp_prediction_stats.npy'
-    with tf.gfile.Open(
-        os.path.join(FLAGS.experiment_dir, fname),
-        'w') as f:
-      np.save(f, gp_prediction) 
+    with tf.gfile.Open( os.path.join(FLAGS.experiment_dir, fname), 'w') as f:
+        np.save(f, gp_prediction) 
 
   return accuracy, mse, pred_norm, stability_eps
 
@@ -190,7 +188,9 @@ def run_nngp_eval(hparams, run_dir):
         model,
         valid_image[:FLAGS.num_eval],
         valid_label[:FLAGS.num_eval],
-        save_pred=True, fname=vfile)
+        save_pred=True, 
+        fname=vfile)
+    
     tf.logging.info('Evaluation of valid set (%d examples) took %.3f secs'%(
         FLAGS.num_eval, time.time() - start_time))
  
@@ -204,7 +204,9 @@ def run_nngp_eval(hparams, run_dir):
         model,
         test_image[:FLAGS.num_eval],
         test_label[:FLAGS.num_eval],
-        save_pred=True, fname=tfile)
+        save_pred=True, 
+        fname=tfile)
+    
     tf.logging.info('Evaluation of test set (%d examples) took %.3f secs'%(
         FLAGS.num_eval, time.time() - start_time))
 
