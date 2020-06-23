@@ -33,7 +33,7 @@ lr = opt.lr
 depth = opt.depth
 width = opt.width
 num_classes = 10
-epochs = 10000
+epochs = 15000
 
 path = "experiments/nn_{}_lr{}_batch{}_depth{}_width{}_size{}_w{}_b{}".format(opt.dataset, lr, batch_size, depth, width, opt.train_size, opt.weight_var, opt.bias_var)
 print(path)
@@ -118,7 +118,7 @@ class MyThresholdCallback(tf.keras.callbacks.Callback):
             self.model.stop_training = True
 
 callbacks = [
-    EarlyStopping(monitor='loss', patience=100, verbose=0),
+    EarlyStopping(monitor='loss', patience=50, verbose=0),
     MyThresholdCallback(threshold=1.0)
     #EarlyStopping(monitor='categorical_accuracy', baseline=1.0, patience=0)
 ]
