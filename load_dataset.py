@@ -25,9 +25,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import sys
 import copy
 import numpy as np
 import tensorflow as tf
+#import tensorflow_datasets as tfds
 
 from keras.datasets import mnist, cifar10 
 
@@ -57,15 +59,43 @@ def load_mnist(num_train=50000,
 
   return mnist_data
 
+def load_mnist(num_train=50000,
+               use_float64=False,
+               mean_subtraction=False,
+               random_roated_labels=False):
+  """Loads MNIST as numpy array."""
+
+  from tensorflow.examples.tutorials.mnist import input_data
+  data_dir = FLAGS.data_dir
+  datasets = input_data.read_data_sets(
+      data_dir, False, validation_size=10000, one_hot=True)
+  mnist_data = _select_subset(
+      datasets,
+      num_train,
+      use_float64=use_float64,
+      mean_subtraction=mean_subtraction,
+      random_roated_labels=random_roated_labels)
+
+  return mnist_data
+
+
 def load_cifar10(num_train=50000,
                  use_float64=False,
                  mean_subtraction=False,
                  random_roated_labels=False):
     """Loads CIFAR as numpy array."""
-    (x_train, y_train), (x_test, y_test) = cifar10.load_data()
+    (x_train, y_trainlabel), (x_test, y_testlabel) = cifar10.load_data()
   
     x_train = np.array([img.flatten() for img in x_train])
     x_test  = np.array([img.flatten() for img in x_test])
+    
+    y_train = np.zeros((len(x_train), 10))
+    for idx, l in enumerate(y_trainlabel):
+        y_train[idx, l] = 1
+  
+    y_test = np.zeros((len(x_test), 10))
+    for idx, l in enumerate(y_testlabel):
+        y_test[idx, l] = 1
     
     x_train = x_train.astype('float64')
     y_train = y_train.astype('float64')
@@ -97,6 +127,14 @@ def load_cifar10(num_train=50000,
             x_valid, y_valid,
             x_test, y_test)
 
+
+def load_stl10(num_train=50000,
+                 use_float64=False,
+                 mean_subtraction=False,
+                 random_roated_labels=False):
+    ds = tfds.load('stl10', split='train', shuffle_files=True)
+    sys.exit()
+        
 def _select_subset(datasets,
                          num_train=100,
                          classes=list(range(10)),
@@ -116,7 +154,6 @@ def _select_subset(datasets,
   idx_list = np.array([], dtype='uint8')
 
   ys = np.argmax(subset.train.labels, axis=1)  # undo one-hot
-
   for c in classes:
     if datasets.train.num_examples == num_train:
       idx_list = np.concatenate((idx_list, np.where(ys == c)[0]))

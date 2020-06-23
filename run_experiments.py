@@ -82,7 +82,6 @@ def do_eval(sess, model, x_data, y_data, save_pred=False, fname=""):
   """Run evaluation."""
 
   gp_prediction, stability_eps = model.predict(x_data, sess)
-
   pred_1 = np.argmax(gp_prediction, axis=1)
   accuracy = np.sum(pred_1 == np.argmax(y_data, axis=1)) / float(len(y_data))
   mse = np.mean(np.mean((gp_prediction - y_data)**2, axis=1))
@@ -124,8 +123,6 @@ def run_nngp_eval(hparams, run_dir):
          num_train=FLAGS.num_train,
          mean_subtraction=True,
          random_roated_labels=False)
-     print(train_image)
-     print(train_image.shape)
 
   elif FLAGS.dataset == 'cifar':
      (train_image, train_label, valid_image, valid_label, test_image,
