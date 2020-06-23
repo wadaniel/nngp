@@ -82,7 +82,6 @@ def do_eval(sess, model, x_data, y_data, save_pred=False, fname=""):
   """Run evaluation."""
 
   gp_prediction, stability_eps = model.predict(x_data, sess)
-
   pred_1 = np.argmax(gp_prediction, axis=1)
   accuracy = np.sum(pred_1 == np.argmax(y_data, axis=1)) / float(len(y_data))
   mse = np.mean(np.mean((gp_prediction - y_data)**2, axis=1))
@@ -93,10 +92,8 @@ def do_eval(sess, model, x_data, y_data, save_pred=False, fname=""):
   if save_pred:
     if (fname == ""):
         fname = 'gp_prediction_stats.npy'
-    with tf.gfile.Open(
-        os.path.join(FLAGS.experiment_dir, fname),
-        'w') as f:
-      np.save(f, gp_prediction) 
+    with tf.gfile.Open( os.path.join(FLAGS.experiment_dir, fname), 'w') as f:
+        np.save(f, gp_prediction) 
 
   return accuracy, mse, pred_norm, stability_eps
 
@@ -124,8 +121,6 @@ def run_nngp_eval(hparams, run_dir):
          num_train=FLAGS.num_train,
          mean_subtraction=True,
          random_roated_labels=False)
-     print(train_image)
-     print(train_image.shape)
 
   elif FLAGS.dataset == 'cifar':
      (train_image, train_label, valid_image, valid_label, test_image,
@@ -193,7 +188,9 @@ def run_nngp_eval(hparams, run_dir):
         model,
         valid_image[:FLAGS.num_eval],
         valid_label[:FLAGS.num_eval],
-        save_pred=True, fname=vfile)
+        save_pred=True, 
+        fname=vfile)
+    
     tf.logging.info('Evaluation of valid set (%d examples) took %.3f secs'%(
         FLAGS.num_eval, time.time() - start_time))
  
@@ -207,7 +204,9 @@ def run_nngp_eval(hparams, run_dir):
         model,
         test_image[:FLAGS.num_eval],
         test_label[:FLAGS.num_eval],
-        save_pred=True, fname=tfile)
+        save_pred=True, 
+        fname=tfile)
+    
     tf.logging.info('Evaluation of test set (%d examples) took %.3f secs'%(
         FLAGS.num_eval, time.time() - start_time))
 
