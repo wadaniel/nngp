@@ -1,8 +1,9 @@
 import argparse
 import numpy as np
+from sklearn.metrics import mean_squared_error
 
 def computeMSOD(outNN, outNNGP):
-    pass
+    return mean_squared_error(outNN, outNNGP)
 
 def readFile(fname):
     f = np.load(fname)
@@ -11,7 +12,7 @@ def readFile(fname):
     return f
 
 def writeMSOD(msod):
-    pass
+    print(msod)
 
 
 if __name__ == '__main__':
