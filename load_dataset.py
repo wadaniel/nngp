@@ -31,7 +31,9 @@ import numpy as np
 import tensorflow as tf
 #import tensorflow_datasets as tfds
 
-from keras.datasets import mnist, cifar10 
+from keras.datasets import mnist, cifar10
+
+from getstl10 import read_all_images, read_labels
 
 # uncomment later
 flags = tf.app.flags
@@ -39,25 +41,6 @@ FLAGS = flags.FLAGS
 
 flags.DEFINE_string('data_dir', '/tmp/nngp/data/',
                     'Directory for data.')
-
-def load_mnist(num_train=50000,
-               use_float64=False,
-               mean_subtraction=False,
-               random_roated_labels=False):
-  """Loads MNIST as numpy array."""
-
-  from tensorflow.examples.tutorials.mnist import input_data
-  data_dir = FLAGS.data_dir
-  datasets = input_data.read_data_sets(
-      data_dir, False, validation_size=10000, one_hot=True)
-  mnist_data = _select_subset(
-      datasets,
-      num_train,
-      use_float64=use_float64,
-      mean_subtraction=mean_subtraction,
-      random_roated_labels=random_roated_labels)
-
-  return mnist_data
 
 def load_mnist(num_train=50000,
                use_float64=False,
@@ -102,15 +85,15 @@ def load_cifar10(num_train=50000,
     x_test  = x_test.astype('float64')
     y_test  = y_test.astype('float64')
 
+    if (num_train+5000 > len(x_train)):
+        print("Too many training points selected {0} + {1} > {2}".format(num_train, 5000, len(x_train)))
+        sys.exit()
+ 
     x_train = x_train[:num_train]
     y_train = y_train[:num_train]
 
-    # split half-half
-    ntest = int(0.5*len(x_test))
-    x_valid = x_test[:ntest]
-    y_valid = y_test[:ntest]
-    x_test  = x_test[ntest+1:]
-    y_test  = y_test[ntest+1:]
+    x_valid = x_train[-5000:]
+    y_valid = y_train[-5000:]
 
     train_image_mean = np.mean(x_train)
     train_label_mean = np.mean(y_train)
@@ -128,13 +111,63 @@ def load_cifar10(num_train=50000,
             x_test, y_test)
 
 
-def load_stl10(num_train=50000,
+def load_stl10(num_train=4500,
                  use_float64=False,
                  mean_subtraction=False,
                  random_roated_labels=False):
-    ds = tfds.load('stl10', split='train', shuffle_files=True)
-    sys.exit()
-        
+
+    DATA_PATH_TRAIN = '/tmp/nngp/data/stl10_binary/train_X.bin'
+    LABEL_PATH_TRAIN = '/tmp/nngp/data/stl10_binary/train_y.bin'
+
+    DATA_PATH_TEST = '/tmp/nngp/data/stl10_binary/test_X.bin'
+    LABEL_PATH_TEST = '/tmp/nngp/data/stl10_binary/test_y.bin'
+
+    x_train      = read_all_images(DATA_PATH_TRAIN)
+    y_trainlabel = read_labels(LABEL_PATH_TRAIN)
+    x_test      = read_all_images(DATA_PATH_TEST)
+    y_testlabel = read_labels(LABEL_PATH_TEST)
+  
+    x_train = np.array([img.flatten() for img in x_train])
+    x_test  = np.array([img.flatten() for img in x_test])
+
+    y_train = np.zeros((len(x_train), 10))
+    for idx, l in enumerate(y_trainlabel):
+        y_train[idx, l-1] = 1
+  
+    y_test = np.zeros((len(x_test), 10))
+    for idx, l in enumerate(y_testlabel):
+        y_test[idx, l-1] = 1
+ 
+    x_train = x_train.astype('float64')
+    y_train = y_train.astype('float64')
+    x_test  = x_test.astype('float64')
+    y_test  = y_test.astype('float64')
+
+    if (num_train+500 > len(x_train)):
+        print("Too many training points selected {0} + {1} > {2}".format(num_train, 5000, len(x_train)))
+        sys.exit()
+ 
+    x_train = x_train[:num_train]
+    y_train = y_train[:num_train]
+
+    x_valid = x_train[-500:]
+    y_valid = y_train[-500:]
+
+    train_image_mean = np.mean(x_train)
+    train_label_mean = np.mean(y_train)
+ 
+    if mean_subtraction:
+        x_train -= train_image_mean
+        y_train -= train_label_mean
+        x_test  -= train_image_mean
+        y_test  -= train_label_mean
+        x_valid -= train_image_mean
+        y_valid -= train_label_mean
+     
+    return (x_train, y_train,
+            x_valid, y_valid,
+            x_test, y_test)
+
 def _select_subset(datasets,
                          num_train=100,
                          classes=list(range(10)),
