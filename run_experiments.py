@@ -127,6 +127,13 @@ def run_nngp_eval(hparams, run_dir):
      test_label) = load_dataset.load_cifar10(
          num_train=FLAGS.num_train,
          mean_subtraction=True)
+ 
+  elif FLAGS.dataset == 'stl10':
+     (train_image, train_label, valid_image, valid_label, test_image,
+     test_label) = load_dataset.load_stl10(
+         num_train=FLAGS.num_train,
+         mean_subtraction=True)
+
 
   else:
     raise NotImplementedError

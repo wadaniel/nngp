@@ -30,8 +30,9 @@ def load_data(dataset):
   return train_image, train_label, valid_image, valid_label, test_image, test_label
 
 if __name__ == '__main__':
-    (train_image, train_label, valid_image, valid_label, test_image, test_label) = load_data('mnist')
-    #(train_image, train_label, valid_image, valid_label, test_image, test_label) = load_data('cifar')
+#    (train_image, train_label, valid_image, valid_label, test_image, test_label) = load_data('mnist')
+#    (train_image, train_label, valid_image, valid_label, test_image, test_label) = load_data('cifar')
+    (train_image, train_label, valid_image, valid_label, test_image, test_label) = load_data('stl10')
 
     print(train_image.shape)
     print(train_label.shape)
