@@ -10,10 +10,12 @@ from tensorflow.keras.callbacks import EarlyStopping
 from keras.regularizers import l2
 import tensorflow as tf
 
+import sys
 import argparse
 import numpy as np
 from math import sqrt
 from sklearn.metrics import accuracy_score
+from load_dataset import load_stl10
 
 if __name__ == '__main__':
 
@@ -27,7 +29,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', default="cifar10")
     parser.add_argument('--weight_var', required=True, type=float)
     parser.add_argument('--bias_var', required=True, type=float)
-    parser.add_argument("--sub_mean", action='store_true', default=False)
+    parser.add_argument('--sub_mean', action='store_true', default=False)
     opt = parser.parse_args()
 
     batch_size = opt.batch_size
@@ -44,6 +46,9 @@ if __name__ == '__main__':
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
     elif opt.dataset == "cifar10":
         (x_train, y_train), (x_test, y_test) = cifar10.load_data()
+    elif opt.dataset == "stl10":
+       x_train, y_train, x_test, y_test = load_stl10(poor=True)
+
 
     x_train = x_train.reshape(x_train.shape[0], -1)[:opt.train_size]
     x_test = x_test.reshape(x_test.shape[0], -1)
@@ -60,9 +65,7 @@ if __name__ == '__main__':
     #x_train = scaler.transform(x_train)
     #x_test = scaler.transform(x_test)
     x_test /= 255
-    print(x_train.shape[0], 'train samples')
-    print(x_test.shape[0], 'test samples')
-     
+    
     # convert class vectors to binary class matrices
     y_train = y_train[:opt.train_size]
     y_train = keras.utils.to_categorical(y_train, num_classes).astype('float64')
@@ -80,6 +83,12 @@ if __name__ == '__main__':
         x_test  -= train_image_mean
         y_test_reg  -= train_label_mean
 
+    print(x_train.shape, 'train samples')
+    print(x_test.shape, 'test samples')
+  
+    print(y_train.shape, 'train labels')
+    print(y_test.shape, 'test labels')
+ 
     print(sqrt(opt.weight_var/width))
     print(type(sqrt(opt.weight_var/width)))
     print(x_train.shape[1])
@@ -125,6 +134,8 @@ if __name__ == '__main__':
         #EarlyStopping(monitor='categorical_accuracy', baseline=1.0, patience=0)
     ]
 
+    print(x_train.shape, flush=True)
+    print(y_train.shape, flush=True)
     history = model.fit(x_train, y_train,
                         batch_size=batch_size,
                         epochs=epochs,

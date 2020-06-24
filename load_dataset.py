@@ -35,18 +35,19 @@ from keras.datasets import mnist, cifar10
 
 from getstl10 import read_all_images, read_labels
 
-# uncomment later
-flags = tf.app.flags
-FLAGS = flags.FLAGS
-
-flags.DEFINE_string('data_dir', '/tmp/nngp/data/',
-                    'Directory for data.')
-
 def load_mnist(num_train=50000,
                use_float64=False,
                mean_subtraction=False,
                random_roated_labels=False):
+  
   """Loads MNIST as numpy array."""
+  # uncomment later
+  flags = tf.app.flags
+  FLAGS = flags.FLAGS
+
+  flags.DEFINE_string('data_dir', '/tmp/nngp/data/',
+                    'Directory for data.')
+
 
   from tensorflow.examples.tutorials.mnist import input_data
   data_dir = FLAGS.data_dir
@@ -114,7 +115,8 @@ def load_cifar10(num_train=50000,
 def load_stl10(num_train=4500,
                  use_float64=False,
                  mean_subtraction=False,
-                 random_roated_labels=False):
+                 random_roated_labels=False,
+                 poor=False):
 
     DATA_PATH_TRAIN = '/tmp/nngp/data/stl10_binary/train_X.bin'
     LABEL_PATH_TRAIN = '/tmp/nngp/data/stl10_binary/train_y.bin'
@@ -124,19 +126,24 @@ def load_stl10(num_train=4500,
 
     x_train      = read_all_images(DATA_PATH_TRAIN)
     y_trainlabel = read_labels(LABEL_PATH_TRAIN)
+    y_trainlabel = y_trainlabel - 1
     x_test      = read_all_images(DATA_PATH_TEST)
     y_testlabel = read_labels(LABEL_PATH_TEST)
+    y_testlabel = y_testlabel - 1
   
+    if poor:
+      return (x_train, y_trainlabel, x_test, y_testlabel)
+
     x_train = np.array([img.flatten() for img in x_train])
     x_test  = np.array([img.flatten() for img in x_test])
 
     y_train = np.zeros((len(x_train), 10))
     for idx, l in enumerate(y_trainlabel):
-        y_train[idx, l-1] = 1
+        y_train[idx, l] = 1
   
     y_test = np.zeros((len(x_test), 10))
     for idx, l in enumerate(y_testlabel):
-        y_test[idx, l-1] = 1
+        y_test[idx, l] = 1
  
     x_train = x_train.astype('float64')
     y_train = y_train.astype('float64')
