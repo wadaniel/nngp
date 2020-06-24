@@ -59,25 +59,6 @@ def load_mnist(num_train=50000,
 
   return mnist_data
 
-def load_mnist(num_train=50000,
-               use_float64=False,
-               mean_subtraction=False,
-               random_roated_labels=False):
-  """Loads MNIST as numpy array."""
-
-  from tensorflow.examples.tutorials.mnist import input_data
-  data_dir = FLAGS.data_dir
-  datasets = input_data.read_data_sets(
-      data_dir, False, validation_size=10000, one_hot=True)
-  mnist_data = _select_subset(
-      datasets,
-      num_train,
-      use_float64=use_float64,
-      mean_subtraction=mean_subtraction,
-      random_roated_labels=random_roated_labels)
-
-  return mnist_data
-
 
 def load_cifar10(num_train=50000,
                  use_float64=False,
@@ -102,15 +83,15 @@ def load_cifar10(num_train=50000,
     x_test  = x_test.astype('float64')
     y_test  = y_test.astype('float64')
 
+    if (num_train+5000 > len(x_train)):
+        print("Too many training points selected {0} + {1} > {2}".format(num_train, 5000, len(x_train)))
+        sys.exit()
+ 
     x_train = x_train[:num_train]
     y_train = y_train[:num_train]
 
-    # split half-half
-    ntest = int(0.5*len(x_test))
-    x_valid = x_test[:ntest]
-    y_valid = y_test[:ntest]
-    x_test  = x_test[ntest+1:]
-    y_test  = y_test[ntest+1:]
+    x_valid = x_train[-5000:]
+    y_valid = y_train[-5000:]
 
     train_image_mean = np.mean(x_train)
     train_label_mean = np.mean(y_train)

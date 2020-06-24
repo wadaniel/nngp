@@ -51,8 +51,8 @@ flags.DEFINE_string('experiment_dir', '/tmp/nngp',
                     'Directory to put the experiment results.')
 flags.DEFINE_string('grid_path', './grid_data',
                     'Directory to put or find the training data.')
-flags.DEFINE_integer('num_train', 1000, 'Number of training data.')
-flags.DEFINE_integer('num_eval', 1000,
+flags.DEFINE_integer('num_train', 50000, 'Number of training data.')
+flags.DEFINE_integer('num_eval', 10000,
                      'Number of evaluation data. Use 10_000 for full eval')
 flags.DEFINE_integer('seed', 1234, 'Random number seed for data shuffling')
 flags.DEFINE_boolean('save_kernel', False, 'Save Kernel do disk')
