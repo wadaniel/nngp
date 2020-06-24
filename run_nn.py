@@ -1,5 +1,4 @@
 from __future__ import print_function
-
 import keras
 from keras.datasets import mnist, cifar10
 from keras.models import Sequential
@@ -7,6 +6,7 @@ from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop, SGD, Adam
 from keras import initializers
 from keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import EarlyStopping
 from keras.regularizers import l2
 import tensorflow as tf
 
