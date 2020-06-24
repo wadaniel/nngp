@@ -1,5 +1,5 @@
 learning_rate=(0.01)
-decay=(0.01)
+decay=(0.00001)
 
 nn_depth=(3 5)
 nn_width=(1000 2000 5000)
@@ -30,8 +30,15 @@ do
                     do
                         
                         echo "TRAIN NN with params:" $lr $d $nnd $nnw $varb
-                        python run_nn.py --lr $lr --decay $d --depth $nnd --width $nnw --weight_var $varw --bias_var $varb --sub_mean
-
+                        python run_nn.py --lr $lr \
+                                         --decay $d \
+                                         --depth $nnd \
+                                         --width $nnw \
+                                         --weight_var $varw \
+                                         --bias_var $varb \
+                                         --dataset "stl10" \
+                                         --sub_mean \
+                                         --train_size 5000
 
                     done
 
