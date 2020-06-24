@@ -185,8 +185,7 @@ def run_nngp_eval(hparams, run_dir):
       tf.logging.info('Evaluation of training set (%d examples) took '
                       '%.3f secs'%(1000, time.time() - start_time))
  
-    vfile = "validation_{0}_{1}_{2}_{3}.npy".format(FLAGS.dataset, FLAGS.num_train, 
-          hparams.weight_var, hparams.bias_var)
+    vfile = "validation_{0}_{1}_{2}_{3}_{4}_{5}.npy".format(FLAGS.dataset, FLAGS.num_train, FLAGS.num_eval, hparams.depth, hparams.weight_var, hparams.bias_var)
  
     start_time = time.time()
     tf.logging.info('Validation')
@@ -201,8 +200,7 @@ def run_nngp_eval(hparams, run_dir):
     tf.logging.info('Evaluation of valid set (%d examples) took %.3f secs'%(
         FLAGS.num_eval, time.time() - start_time))
  
-    tfile = "test_{0}_{1}_{2}_{3}.npy".format(FLAGS.dataset, FLAGS.num_train, 
-          hparams.weight_var, hparams.bias_var)
+    tfile = "test_{0}_{1}_{2}_{3}_{4}_{5}.npy".format(FLAGS.dataset, FLAGS.num_train, FLAGS.num_eval, hparams.depth, hparams.weight_var, hparams.bias_var)
  
     start_time = time.time()
     tf.logging.info('Test')
@@ -240,8 +238,12 @@ def run_nngp_eval(hparams, run_dir):
     record_results.append(nngp_kernel.var_fixed_point_np[0])
 
   # Store data
-  rfile = "results_{0}_{1}_{2}_{3}.csv".format(FLAGS.dataset, FLAGS.num_train, 
-          hparams.weight_var, hparams.bias_var)
+  rfile = "results_{0}_{1}_{2}_{3}_{4}_{5}.csv".format(FLAGS.dataset, \
+          FLAGS.num_train, \
+          FLAGS.num_eval, \
+          hparams.depth, \
+          hparams.weight_var, \
+          hparams.bias_var)
   
   result_file = os.path.join(run_dir, rfile)
   with tf.gfile.Open(result_file, 'a') as f:
