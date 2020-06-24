@@ -1,5 +1,5 @@
 learning_rate=(0.01)
-decay=(0.00001)
+decay=(0.000001)
 
 nn_depth=(3 5)
 nn_width=(1000 2000 5000)
@@ -22,11 +22,11 @@ do
             do
 
 
-                for varw in "${nn_varw}"
+                for varw in "${nn_varw[@]}"
                 do
 
 
-                    for varb in "${nn_varb}"
+                    for varb in "${nn_varb[@]}"
                     do
                         
                         echo "TRAIN NN with params:" $lr $d $nnd $nnw $varb

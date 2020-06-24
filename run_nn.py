@@ -142,9 +142,13 @@ if __name__ == '__main__':
                         verbose=1,
                         callbacks=callbacks)
 
-    score = model.evaluate(x_test, y_test_reg, verbose=0)
-    print('Test loss:', score[0])
+    loss  = model.evaluate(x_test, y_test_reg, verbose=0)
+    score = accuracy_score(y_test, predictions.argmax(axis=1))
     predictions = model.predict(x_test)
-    print(accuracy_score(y_test, predictions.argmax(axis=1)))
+    
+    print('Test loss:', loss[0])
+    np.save(path + "_loss.npy", loss)
+    print("Accuracy Score:", score)
+    np.save(path + "_acc.npy", score)
     print(predictions)
-    np.save(path + ".npy", predictions)
+    np.save(path + "_predictions.npy", predictions)
