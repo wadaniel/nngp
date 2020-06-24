@@ -9,6 +9,9 @@ nn_varb=(0.00 0.52 1.05 1.57 2.09)
 
 pushd ..
 
+mkdir -p experiments
+mkdir -p output
+
 for lr in "${learning_rate[@]}"
 do
 
@@ -30,15 +33,17 @@ do
                     do
                         
                         echo "TRAIN NN with params:" $lr $d $nnd $nnw $varb
-                        python run_nn.py --lr $lr \
-                                         --decay $d \
-                                         --depth $nnd \
-                                         --width $nnw \
-                                         --weight_var $varw \
-                                         --bias_var $varb \
-                                         --dataset "stl10" \
-                                         --sub_mean \
-                                         --train_size 5000
+                        outfile="./output/${lr}_${d}_${nnd}_${nnw}_${varb}.out"
+                        time python run_nn.py --lr $lr \
+                                              --decay $d \
+                                              --depth $nnd \
+                                              --width $nnw \
+                                              --weight_var $varw \
+                                              --bias_var $varb \
+                                              --dataset "stl10" \
+                                              --sub_mean \
+                                              --train_size 5000 \
+                                              2>&1 | tee ${outfile}
 
                     done
 
