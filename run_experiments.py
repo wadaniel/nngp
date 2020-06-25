@@ -147,7 +147,11 @@ def run_nngp_eval(hparams, run_dir):
   else:
     raise NotImplementedError
 
-  with tf.Session() as sess:
+  session_conf = tf.ConfigProto(
+        intra_op_parallelism_threads=6,
+        inter_op_parallelism_threads=2)
+ 
+  with tf.Session(config=session_conf) as sess:
     # Construct NNGP kernel
     nngp_kernel = nngp.NNGPKernel(
         depth=hparams.depth,
@@ -261,4 +265,3 @@ def main(argv):
 
 if __name__ == '__main__':
   tf.app.run(main)
-

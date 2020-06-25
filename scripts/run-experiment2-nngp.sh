@@ -1,11 +1,13 @@
 #nngp_depth=(1 3 5 7)
+nngp_depth=(5)
 
-#nngp_varw=(1.28 2.21 3.14 4.07 5.00)
-#nngp_varb=(0.00 0.47 0.93 1.40 1.86)
+nngp_varw=(1.28 2.21 3.14 4.07 5.00)
+nngp_varb=(0.00 0.47 0.93 1.40 1.86)
 
-nngp_depth=(1)
-nngp_varw=(1.28)
-nngp_varb=(0.00)
+# 7 up to (3.14, 0.93)
+
+#nngp_varw=(1.28)
+#nngp_varb=(0.00)
 
 
 pushd ..
@@ -20,7 +22,7 @@ do
         do
             hpar="nonlinearity=relu,depth=${nnd},weight_var=${varw},bias_var=${varb}"
             echo "TRAIN NNGP with params: ${hpar}"
-            outfile="/tmp/gml/output/nngp_${nnd}_${varw}_${varb}.out"
+            outfile="/tmp/nngp/output/nngp_${nnd}_${varw}_${varb}.out"
             time python run_experiments.py \
                 --num_train=4500 \
                 --num_eval=8000 \
@@ -32,7 +34,6 @@ do
                 --use_precomputed_grid=False \
                 --dataset='stl10' 2>&1 | tee ${outfile}
 
-            sleep 30
         done
     done
 done
