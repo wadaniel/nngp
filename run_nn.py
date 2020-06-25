@@ -49,7 +49,6 @@ if __name__ == '__main__':
     elif opt.dataset == "stl10":
        x_train, y_train, x_test, y_test = load_stl10(poor=True)
 
-
     x_train = x_train.reshape(x_train.shape[0], -1)[:opt.train_size]
     x_test = x_test.reshape(x_test.shape[0], -1)
     x_train = x_train.astype('float64')

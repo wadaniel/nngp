@@ -3,13 +3,11 @@ import numpy as np
 #from sklearn.metrics import mean_squared_error
 
 def computeMSOD(outNN, outNNGP):
-#    return mean_squared_error(outNN, outNNGP)
-    pass
+    return mean_squared_error(outNN, outNNGP)
 
 def readFile(fname):
     f = np.load(fname)
-    #print(f)
-    print(f.shape)
+    print(f)
     return f
 
 def writeMSOD(msod):

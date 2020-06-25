@@ -1,7 +1,7 @@
-learning_rate=(0.01)
+learning_rate=(0.001)
 decay=(0.000001)
 
-nn_depth=(3 5)
+nn_depth=(3 5) #7
 nn_width=(1000 2000 5000)
 
 nn_varw=(1.28 2.36 3.44 4.52 5.59)
