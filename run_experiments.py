@@ -148,8 +148,8 @@ def run_nngp_eval(hparams, run_dir):
     raise NotImplementedError
 
   session_conf = tf.ConfigProto(
-        intra_op_parallelism_threads=6,
-        inter_op_parallelism_threads=2)
+        intra_op_parallelism_threads=12,
+        inter_op_parallelism_threads=1)
  
   with tf.Session(config=session_conf) as sess:
     # Construct NNGP kernel
