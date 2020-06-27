@@ -1,16 +1,13 @@
 #! /bin/bash
 
 # replace by nngp file
-nngp='nn_cifar10_lr0.01_batch32_depth5_width5_size10000_w1.6_b1.07.npy' 
+nngp='test_cifar_10000_1.6_1.07.npy'
 
 declare -a nns=(
-'nn_cifar10_lr0.01_batch32_depth5_width5_size10000_w1.6_b1.07.npy'
-'nn_cifar10_lr0.01_batch64_depth5_width5_size10000_w1.6_b1.07.npy'
-'nn_cifar10_lr0.01_batch64_depth5_width50_size10000_w1.6_b1.07.npy'
-'nn_cifar10_lr0.01_batch124_depth5_width500_size10000_w1.6_b1.07.npy'
-'nn_cifar10_lr0.01_batch64_depth5_width500_size10000_w1.6_b1.07.npy'
-'nn_cifar10_lr0.001_batch256_depth5_width2000_size10000_w1.6_b1.07.npy'
-'nn_cifar10_lr0.001_batch256_depth5_width5000_size10000_w1.6_b1.07.npy'
+'nn_cifar10_lr0.001_batch256_depth5_width5_size10000_w1.6_b1.07_predictions.npy'
+'nn_cifar10_lr0.001_batch256_depth5_width50_size10000_w1.6_b1.07_predictions.npy'
+'nn_cifar10_lr0.001_batch256_depth5_width500_size10000_w1.6_b1.07_predictions.npy'
+'nn_cifar10_lr0.001_batch256_depth5_width5000_size10000_w1.6_b1.07_predictions.npy'
 )
 
 pushd ..
