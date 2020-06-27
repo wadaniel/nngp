@@ -37,7 +37,7 @@ if __name__ == '__main__':
     depth = opt.depth
     width = opt.width
     num_classes = 10
-    epochs = 15000
+    epochs = 500
 
     path = "experiments/nn_{}_lr{}_batch{}_depth{}_width{}_size{}_w{}_b{}".format(opt.dataset, lr, batch_size, depth, width, opt.train_size, opt.weight_var, opt.bias_var)
     print(path)
@@ -113,7 +113,7 @@ if __name__ == '__main__':
         initial_learning_rate=lr,
         decay_steps=100000,
         decay_rate=opt.decay)
-    optimizer = tf.keras.optimizers.SGD(learning_rate=lr)#_schedule)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=lr)#_schedule)
 
     model.compile(loss='mean_squared_error', optimizer=optimizer, metrics=['mean_squared_error', 'categorical_accuracy'])
 
