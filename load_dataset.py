@@ -151,7 +151,7 @@ def load_stl10(num_train=4500,
     y_test  = y_test.astype('float64')
 
     if (num_train+500 > len(x_train)):
-        print("Too many training points selected {0} + {1} > {2}".format(num_train, 5000, len(x_train)))
+        print("Too many training points selected {0} + {1} > {2}".format(num_train, 500, len(x_train)))
         sys.exit()
  
     x_train = x_train[:num_train]

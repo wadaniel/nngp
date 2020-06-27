@@ -37,7 +37,7 @@ if __name__ == '__main__':
     depth = opt.depth
     width = opt.width
     num_classes = 10
-    epochs = 15000
+    epochs = 500
 
     path = "experiments/nn_{}_lr{}_batch{}_depth{}_width{}_size{}_w{}_b{}".format(opt.dataset, lr, batch_size, depth, width, opt.train_size, opt.weight_var, opt.bias_var)
     print(path)
@@ -48,7 +48,6 @@ if __name__ == '__main__':
         (x_train, y_train), (x_test, y_test) = cifar10.load_data()
     elif opt.dataset == "stl10":
        x_train, y_train, x_test, y_test = load_stl10(poor=True)
-
 
     x_train = x_train.reshape(x_train.shape[0], -1)[:opt.train_size]
     x_test = x_test.reshape(x_test.shape[0], -1)
@@ -114,7 +113,7 @@ if __name__ == '__main__':
         initial_learning_rate=lr,
         decay_steps=100000,
         decay_rate=opt.decay)
-    optimizer = tf.keras.optimizers.SGD(learning_rate=lr)#_schedule)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=lr)#_schedule)
 
     model.compile(loss='mean_squared_error', optimizer=optimizer, metrics=['mean_squared_error', 'categorical_accuracy'])
 
@@ -142,9 +141,14 @@ if __name__ == '__main__':
                         verbose=1,
                         callbacks=callbacks)
 
-    score = model.evaluate(x_test, y_test_reg, verbose=0)
-    print('Test loss:', score[0])
     predictions = model.predict(x_test)
-    print(accuracy_score(y_test, predictions.argmax(axis=1)))
+    
+    loss  = model.evaluate(x_test, y_test_reg, verbose=0)
+    score = accuracy_score(y_test, predictions.argmax(axis=1))
+    
+    print('Test loss:', loss[0])
+    np.save(path + "_loss.npy", loss)
+    print("Accuracy Score:", score)
+    np.save(path + "_acc.npy", score)
     print(predictions)
-    np.save(path + ".npy", predictions)
+    np.save(path + "_predictions.npy", predictions)
